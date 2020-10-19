@@ -1,6 +1,6 @@
-
 package net.infoxication.reactstarprnt;
 
+import android.util.Log;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -13,7 +13,7 @@ import android.provider.MediaStore;
 import android.text.TextPaint;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.text.StaticLayout;
 import android.text.Layout;
 import android.util.Base64;
@@ -43,6 +43,10 @@ import java.util.Locale;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import java.net.URL;
+import java.net.HttpURLConnection;
+import java.io.InputStream;
 
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.starmicronics.stario.PortInfo;
@@ -571,8 +575,20 @@ public class RNStarPrntModule extends ReactContextBaseJavaModule {
                 boolean bothScale = (command.hasKey("bothScale")) ? command.getBoolean("bothScale") : true;
                 ICommandBuilder.BitmapConverterRotation rotation = (command.hasKey("rotation")) ? getConverterRotation(command.getString("rotation")) : getConverterRotation("Normal");
                 try {
-                    Uri imageUri =  Uri.parse(uriString);
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri);
+                    Log.d("ReactNative", "aaaaaaaaaaaaaaaaa");
+                    System.out.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+
+                    // Uri imageUri =  Uri.parse(uriString);
+                    // Bitmap bitmap = MediaStore.Images.Media.getBitmap(contentResolver, imageUri);
+
+                    URL url = new URL(uriString);
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setDoInput(true);
+                    connection.connect();
+                    InputStream input = connection.getInputStream();
+                    Bitmap bitmap = BitmapFactory.decodeStream(input);
+                    Log.d("ReactNative", "eeeeeeeeeeeeeeeeee");
+
                     if(command.hasKey("absolutePosition")){
                         int position =  command.getInt("absolutePosition");
                         builder.appendBitmapWithAbsolutePosition(bitmap, diffusion, width, bothScale, rotation, position);
